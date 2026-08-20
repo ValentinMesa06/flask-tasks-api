@@ -13,7 +13,11 @@ python app.py
 ## Endpoints
 
 GET    /tasks
+
 GET    /tasks/<id>
+
 POST   /tasks
+
 PATCH  /tasks/<id>
+
 DELETE /tasks/<id>
