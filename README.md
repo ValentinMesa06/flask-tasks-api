@@ -74,7 +74,9 @@ flask-tasks-api/
 │
 └── postman/
 
-### app.py
+---
+
+**### app.py**
 
 Es el punto de entrada de la aplicación.
 
@@ -87,7 +89,9 @@ Se encarga de:
 -Registrar el Blueprint de tareas.
 -Iniciar el servidor.
 
-### models.py
+---
+
+**### models.py**
 
 Contiene la configuración de SQLAlchemy y el modelo Task.
 
@@ -107,13 +111,19 @@ Las rutas están organizadas utilizando un Blueprint llamado tasks_bp.
 
 Esto permite mantener separada la configuración principal de Flask de las rutas de la API.
 
+---
+
 ### requirements.txt
 
 Contiene las dependencias necesarias para ejecutar el proyecto.
 
+---
+
 ### postman/
 
 Contiene los recursos utilizados para realizar las pruebas de la API mediante Postman.
+
+---
 
 # ⚙️ Instalación
 ### 1. Clonar el repositorio
@@ -132,6 +142,8 @@ pip install -r requirements.txt
 
 Esto instalará Flask, Flask-SQLAlchemy, SQLAlchemy y las demás dependencias necesarias.
 
+---
+
 # ▶️ Ejecutar la aplicación
 
 Para iniciar el servidor:
@@ -146,6 +158,8 @@ Para detener el servidor:
 
 Ctrl + C
 
+---
+
 # 🔌 Endpoints
 
 La API implementa un CRUD completo para gestionar tareas.
@@ -156,6 +170,8 @@ La API implementa un CRUD completo para gestionar tareas.
 - POST	/tasks	Crear una nueva tarea
 - PATCH	/tasks/<id>	Actualizar una tarea
 - DELETE	/tasks/<id>	Eliminar una tarea
+
+---
 
 ### 📋 GET /tasks
 
@@ -178,6 +194,8 @@ Response
 ]
 
 El endpoint devuelve una lista con todas las tareas almacenadas.
+
+---
 
 ### 🔎 GET /tasks/<id>
 
@@ -206,6 +224,8 @@ La API devuelve:
 con código HTTP:
 
 404 Not Found
+
+---
 
 ### ➕ POST /tasks
 
@@ -275,6 +295,8 @@ Ejemplo inválido:
 
 En este caso la API devuelve un error 400 Bad Request.
 
+---
+
 ### ✏️ PATCH /tasks/<id>
 
 Permite modificar parcialmente una tarea existente.
@@ -333,6 +355,8 @@ con código:
 
 404 Not Found
 
+---
+
 ### 🗑️ DELETE /tasks/<id>
 
 Elimina una tarea de la base de datos.
@@ -362,6 +386,8 @@ con código:
 
 404 Not Found
 
+---
+
 # 🚦 Códigos de estado HTTP
 
 La API utiliza diferentes códigos HTTP dependiendo del resultado de cada operación.
@@ -372,6 +398,8 @@ Código	Significado	Uso
 - 204	No Content	Tarea eliminada correctamente
 - 400	Bad Request	Datos enviados incorrectamente
 - 404	Not Found	Tarea inexistente
+
+---
 
 # 🗄️ Base de datos
 
@@ -390,6 +418,8 @@ Cada objeto Task representa una fila dentro de la tabla de tareas.
 
 La base de datos se crea automáticamente al iniciar la aplicación.
 
+---
+
 ## 🧩 Flask Blueprint
 
 Las rutas de la API están organizadas utilizando un Blueprint:
@@ -405,6 +435,8 @@ Posteriormente, el Blueprint se registra en app.py:
 app.register_blueprint(tasks_bp)
 
 Esta organización permite separar las rutas de la configuración principal de Flask y facilita que el proyecto pueda crecer en el futuro.
+
+---
 
 ### 🔄 Funcionamiento de la API
 
@@ -442,6 +474,8 @@ POST /tasks
 la petición llega a Flask y es dirigida al endpoint correspondiente dentro del Blueprint.
 
 Luego se validan los datos recibidos, se crea un objeto Task, SQLAlchemy guarda la información en SQLite y finalmente la API devuelve la tarea creada en formato JSON.
+
+---
 
 # 🧪 Pruebas con Postman
 
@@ -484,6 +518,8 @@ Durante el desarrollo del proyecto se aplicaron diferentes conceptos de desarrol
 - Persistencia de datos.
 - Control de versiones con Git.
 
+---
+
 # 🚀 Próximas mejoras
 
 Algunas funcionalidades que pueden incorporarse en futuras versiones:
@@ -498,6 +534,8 @@ Algunas funcionalidades que pueden incorporarse en futuras versiones:
  - Implementar búsqueda de tareas.
  - Dockerizar la aplicación.
  - Realizar el deploy de la API.
+
+---
 
 # 👨‍💻 Autor
 
