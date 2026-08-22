@@ -1,5 +1,12 @@
 __pycache__/
 *.py[cod]
+
+instance/
+
 .venv/
 venv/
+env/
+
 .env
+
+.postman/
