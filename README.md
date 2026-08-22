@@ -76,40 +76,42 @@ flask-tasks-api/
 
 ---
 
-**### app.py**
+### app.py
 
 Es el punto de entrada de la aplicación.
 
 Se encarga de:
 
--Crear la aplicación Flask.
--Configurar la conexión con SQLite.
--Inicializar SQLAlchemy.
--Crear las tablas de la base de datos.
--Registrar el Blueprint de tareas.
--Iniciar el servidor.
+- Crear la aplicación Flask.
+- Configurar la conexión con SQLite.
+- Inicializar SQLAlchemy.
+- Crear las tablas de la base de datos.
+- Registrar el Blueprint de tareas.
+- Iniciar el servidor.
 
 ---
 
-**### models.py**
+### models.py
 
-Contiene la configuración de SQLAlchemy y el modelo Task.
+Contiene la configuración de SQLAlchemy y el modelo `Task`.
 
 El modelo representa una tarea dentro de la base de datos.
 
 Cada tarea tiene los siguientes campos:
 
--Campo	Tipo	Descripción
-- id	Integer	Identificador único de la tarea
-- title	String	Título de la tarea
-- completed	Boolean	Indica si la tarea está completada
-- routes/tasks.py
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | Integer | Identificador único de la tarea |
+| `title` | String | Título de la tarea |
+| `completed` | Boolean | Indica si la tarea está completada |
+
+---
+
+### routes/tasks.py
 
 Contiene todos los endpoints relacionados con las tareas.
 
-Las rutas están organizadas utilizando un Blueprint llamado tasks_bp.
-
-Esto permite mantener separada la configuración principal de Flask de las rutas de la API.
+Las rutas están organizadas utilizando un Blueprint llamado `tasks_bp`. Esto permite mantener separada la configuración principal de Flask de las rutas de la API.
 
 ---
 
@@ -125,10 +127,12 @@ Contiene los recursos utilizados para realizar las pruebas de la API mediante Po
 
 ---
 
-# ⚙️ Instalación
+## ⚙️ Instalación
+
 ### 1. Clonar el repositorio
 
-git clone https://github.com/ValentinMesa06/flask-tasks-api.git
+```bash
+git clone [https://github.com/ValentinMesa06/flask-tasks-api.git](https://github.com/ValentinMesa06/flask-tasks-api.git)
 
 Entrar en la carpeta del proyecto:
 
