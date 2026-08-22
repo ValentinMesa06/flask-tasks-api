@@ -1,23 +1,31 @@
 # Flask Tasks API
 
-API REST para gestionar tareas utilizando Flask.
+API REST para gestionar tareas desarrollada con **Python, Flask, Flask-SQLAlchemy y SQLite**.
 
-## Instalación
+El proyecto implementa un CRUD completo de tareas, validaciones de datos y una estructura organizada mediante **Blueprints**.
 
-pip install -r requirements.txt
+## 🚀 Tecnologías
 
-## Ejecutar
+- Python 3
+- Flask
+- Flask-SQLAlchemy
+- SQLAlchemy
+- SQLite
+- Postman
+- Git / GitHub
 
-python app.py
+## 📁 Estructura del proyecto
 
-## Endpoints
-
-GET    /tasks
-
-GET    /tasks/<id>
-
-POST   /tasks
-
-PATCH  /tasks/<id>
-
-DELETE /tasks/<id>
+```text
+flask-tasks-api/
+│
+├── app.py
+├── models.py
+├── requirements.txt
+├── README.md
+│
+├── routes/
+│   ├── __init__.py
+│   └── tasks.py
+│
+└── postman/
