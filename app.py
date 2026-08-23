@@ -2,19 +2,28 @@ from flask import Flask
 from models import db
 from routes.tasks import tasks_bp
 
-app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tasks.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+def create_app(test_config=None):
+    app = Flask(__name__)
 
-db.init_app(app)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tasks.db"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-with app.app_context():
-    db.create_all()
+    if test_config is not None:
+        app.config.update(test_config)
 
-app.register_blueprint(tasks_bp)
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+
+    app.register_blueprint(tasks_bp)
+
+    return app
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+app = create_app()
 
+
+if __name__ == "__main__": # pragma: no cover
+    app.run(debug=True) # pragma: no cover

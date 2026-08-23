@@ -26,7 +26,7 @@ def get_task(task_id):
 # POST /tasks crea una nueva tarea en la base de datos
 @tasks_bp.post("/tasks")
 def create_task():
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
         return jsonify({"error": "El cuerpo debe ser un objeto JSON"}), 400
@@ -60,7 +60,7 @@ def update_task(task_id):
     if task is None:
         return jsonify({"error": "Tarea no encontrada"}), 404
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
         return jsonify({"error": "El cuerpo debe ser un objeto JSON"}), 400
