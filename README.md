@@ -25,7 +25,7 @@ El proyecto implementa un CRUD completo de tareas, persistencia de datos mediant
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## ⚙️ Tecnologías utilizadas
 
 | Tecnología | Uso |
 |---|---|
@@ -86,7 +86,7 @@ flask-tasks-api/
 
 ---
 
-# 🚀 Instalación
+# 🚀 Instalación y ejecución del proyecto
 
 ## 1. Clonar el repositorio
 
@@ -117,15 +117,16 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
----
-
-# ▶️ Ejecutar la aplicación
+## 4. Ejecutar la aplicación
 
 ```bash
 python app.py
 ```
 
 La API estará disponible normalmente en `http://127.0.0.1:5000` o `http://localhost:5000`.
+La base de datos SQLite se crea en `instance/tasks.db` cuando la aplicación la necesita.
+
+Para detener el servidor, utiliza `Ctrl+C`.
 
 ---
 
@@ -149,7 +150,27 @@ El campo `id` es generado automáticamente por la base de datos. `completed` tie
 
 ---
 
-# 🔌 Endpoints
+# 🔗 Endpoints completos
+
+URL base: `http://127.0.0.1:5000`
+
+| Método | Ruta | Descripción | Respuesta exitosa |
+|---|---|---|---|
+| `GET` | `/tasks` | Lista todas las tareas | `200 OK` |
+| `GET` | `/tasks/<id>` | Obtiene una tarea por su ID | `200 OK` |
+| `POST` | `/tasks` | Crea una tarea | `201 Created` |
+| `PATCH` | `/tasks/<id>` | Actualiza uno o más campos | `200 OK` |
+| `DELETE` | `/tasks/<id>` | Elimina una tarea | `204 No Content` |
+
+Los identificadores (`<id>`) deben ser enteros. Cuando una tarea no existe, la API devuelve `404 Not Found`.
+
+## 📚 Documentación Swagger / OpenAPI
+
+La documentación Swagger / OpenAPI está contemplada como una mejora futura del proyecto. Actualmente, los endpoints, parámetros, cuerpos JSON y respuestas están documentados en este README. Para añadir una interfaz interactiva, se puede integrar una herramienta compatible con Flask, como `flasgger` o `flask-smorest`.
+
+---
+
+## Ejemplos de requests y responses
 
 ## Obtener todas las tareas
 
@@ -161,7 +182,13 @@ GET /tasks
 curl http://127.0.0.1:5000/tasks
 ```
 
-Devuelve una lista de tareas con código `200 OK`.
+Respuesta (`200 OK`):
+
+```json
+[
+	{"id": 1, "title": "Aprender Flask", "completed": false}
+]
+```
 
 ## Obtener una tarea
 
@@ -173,7 +200,13 @@ GET /tasks/<id>
 curl http://127.0.0.1:5000/tasks/1
 ```
 
-Devuelve la tarea con código `200 OK`. Si no existe:
+Respuesta (`200 OK`):
+
+```json
+{"id": 1, "title": "Aprender Flask", "completed": false}
+```
+
+Si no existe (`404 Not Found`):
 
 ```json
 {"error": "Tarea no encontrada"}
@@ -195,7 +228,19 @@ Content-Type: application/json
 }
 ```
 
-El campo `completed` es opcional y utiliza `false` por defecto. Devuelve la tarea creada con código `201 Created`.
+```bash
+curl -X POST http://127.0.0.1:5000/tasks \
+	-H "Content-Type: application/json" \
+	-d '{"title":"Aprender Flask","completed":false}'
+```
+
+Respuesta (`201 Created`):
+
+```json
+{"id": 1, "title": "Aprender Flask", "completed": false}
+```
+
+El campo `completed` es opcional y utiliza `false` por defecto.
 
 ## Actualizar una tarea
 
@@ -204,6 +249,18 @@ PATCH /tasks/<id>
 ```
 
 Permite modificar uno o varios campos (`title` y `completed`) de una tarea existente. Devuelve la tarea actualizada con código `200 OK`.
+
+```bash
+curl -X PATCH http://127.0.0.1:5000/tasks/1 \
+	-H "Content-Type: application/json" \
+	-d '{"completed":true}'
+```
+
+Respuesta (`200 OK`):
+
+```json
+{"id": 1, "title": "Aprender Flask", "completed": true}
+```
 
 ## Eliminar una tarea
 
@@ -243,22 +300,31 @@ Todos corresponden a `400 Bad Request`.
 
 ---
 
-# 🧪 Tests
+# 🧪 Cómo ejecutar los tests
 
 El proyecto utiliza **Pytest** y cuenta actualmente con 16 tests, 100% de cobertura y 0 warnings.
 
 ```bash
 pytest
-pytest --cov=. --cov-report=term-missing
 ```
 
 Los tests utilizan una base de datos independiente para evitar modificar los datos reales.
 
+## 📊 Coverage
+
+Para ejecutar los tests y generar el informe de cobertura:
+
+```bash
+pytest --cov=. --cov-report=term-missing
+```
+
+El proyecto cuenta actualmente con 16 tests y una cobertura del 100%. El informe muestra las líneas no cubiertas directamente en la terminal.
+
 ---
 
-# 🔄 Integración continua
+# ✅ GitHub Actions e integración continua
 
-El workflow `.github/workflows/tests.yml` ejecuta automáticamente los tests en cada `push` a `main` y en Pull Requests hacia `main`.
+El workflow `.github/workflows/tests.yml` ejecuta automáticamente los tests en cada `push` a `main` y en Pull Requests hacia `main`. Así se comprueba que los cambios mantienen el funcionamiento esperado antes de integrarse.
 
 Proceso: configurar Python → instalar dependencias → ejecutar Pytest → verificar los 16 tests y el 100% de cobertura.
 
