@@ -1,5 +1,6 @@
 from flask import Flask
 from models import db
+from flasgger import Swagger
 from routes.tasks import tasks_bp
 
 
@@ -18,6 +19,8 @@ def create_app(test_config=None):
         db.create_all()
 
     app.register_blueprint(tasks_bp)
+    
+    swagger = Swagger(app)
 
     return app
 

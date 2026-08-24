@@ -7,6 +7,30 @@ tasks_bp = Blueprint("tasks", __name__)
 # GET /tasks obtiene todas las tareas de la base de datos y las devuelve en formato JSON.
 @tasks_bp.get("/tasks")
 def get_tasks():
+    """
+    Obtener todas las tareas
+    ---
+    tags:
+      - Tasks
+    responses:
+      200:
+        description: Lista de todas las tareas
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              title:
+                type: string
+                example: "Aprender Flask"
+              completed:
+                type: boolean
+                example: false
+    """
+    
     tasks_from_db = Task.query.all()
 
     return jsonify([task.to_dict() for task in tasks_from_db])
@@ -15,6 +39,43 @@ def get_tasks():
 # GET /tasks/<int:task_id> obtiene una tarea específica por su ID
 @tasks_bp.get("/tasks/<int:task_id>")
 def get_task(task_id):
+    """
+    Obtener una tarea por ID
+    ---
+    tags:
+      - Tasks
+    parameters:
+      - name: task_id
+        in: path
+        type: integer
+        required: true
+        description: ID de la tarea
+        example: 1
+    responses:
+      200:
+        description: Tarea encontrada
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: "Aprender Flask"
+            completed:
+              type: boolean
+              example: false
+      404:
+        description: Tarea no encontrada
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Tarea no encontrada"
+    """
+    
     task = db.session.get(Task, task_id)
 
     if task is None:
@@ -26,6 +87,55 @@ def get_task(task_id):
 # POST /tasks crea una nueva tarea en la base de datos
 @tasks_bp.post("/tasks")
 def create_task():
+    """
+    Crear una nueva tarea
+    ---
+    tags:
+      - Tasks
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - title
+          properties:
+            title:
+              type: string
+              example: "Aprender Flask"
+            completed:
+              type: boolean
+              example: false
+    responses:
+      201:
+        description: Tarea creada correctamente
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: "Aprender Flask"
+            completed:
+              type: boolean
+              example: false
+      400:
+        description: Datos inválidos
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "El campo 'title' es obligatorio"
+    """
+    
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
@@ -55,6 +165,67 @@ def create_task():
 # PATCH /tasks/<int:task_id> actualiza una tarea existente
 @tasks_bp.patch("/tasks/<int:task_id>")
 def update_task(task_id):
+    """
+    Actualizar una tarea
+    ---
+    tags:
+      - Tasks
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - name: task_id
+        in: path
+        type: integer
+        required: true
+        description: ID de la tarea
+        example: 1
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            title:
+              type: string
+              example: "Aprender Flask y SQLAlchemy"
+            completed:
+              type: boolean
+              example: true
+    responses:
+      200:
+        description: Tarea actualizada correctamente
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: "Aprender Flask y SQLAlchemy"
+            completed:
+              type: boolean
+              example: true
+      400:
+        description: Datos inválidos
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "'title' debe ser un texto no vacío"
+      404:
+        description: Tarea no encontrada
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Tarea no encontrada"
+    """
+    
     task = db.session.get(Task, task_id)
 
     if task is None:
@@ -84,7 +255,35 @@ def update_task(task_id):
 
 # DELETE /tasks/<int:task_id> elimina una tarea existente
 @tasks_bp.delete("/tasks/<int:task_id>")
+@tasks_bp.delete("/tasks/<int:task_id>")
 def delete_task(task_id):
+    """
+    Eliminar una tarea
+    ---
+    tags:
+      - Tasks
+    produces:
+      - application/json
+    parameters:
+      - name: task_id
+        in: path
+        type: integer
+        required: true
+        description: ID de la tarea que se desea eliminar
+        example: 1
+    responses:
+      204:
+        description: Tarea eliminada correctamente
+      404:
+        description: Tarea no encontrada
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Tarea no encontrada"
+    """
+    
     task = db.session.get(Task, task_id)
 
     if task is None:
