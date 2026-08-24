@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
 from dotenv import load_dotenv
 from flasgger import Swagger
 from routes.tasks import tasks_bp
@@ -28,6 +28,18 @@ def create_app(test_config=None):
         db.create_all()
 
     app.register_blueprint(tasks_bp)
+    
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({"error": "Recurso no encontrado"}), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({"error": "Método no permitido"}), 405
+    
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return jsonify({"error": "Error interno del servidor"}), 500
 
     swagger = Swagger(app)
 

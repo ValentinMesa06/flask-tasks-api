@@ -227,3 +227,40 @@ def test_update_task_with_invalid_body(client):
     data = response.get_json()
 
     assert data["error"] == "El cuerpo debe ser un objeto JSON"
+    
+
+# Casos de prueba para rutas no encontradas
+def test_route_not_found(client):
+    response = client.get("/ruta-que-no-existe")
+
+    assert response.status_code == 404
+
+    data = response.get_json()
+
+    assert data["error"] == "Recurso no encontrado"
+
+def test_method_not_allowed(client):
+    response = client.post("/tasks/1")
+
+    assert response.status_code == 405
+
+    data = response.get_json()
+
+    assert data["error"] == "Método no permitido"
+
+def test_internal_server_error(client):
+    app = client.application
+
+    app.config["PROPAGATE_EXCEPTIONS"] = False
+
+    @app.route("/trigger-500-test")
+    def trigger_500_test():
+        raise Exception("Error de prueba")
+
+    response = client.get("/trigger-500-test")
+
+    assert response.status_code == 500
+
+    data = response.get_json()
+
+    assert data["error"] == "Error interno del servidor"
