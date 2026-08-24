@@ -1,13 +1,22 @@
+import os
+
 from flask import Flask
-from models import db
+from dotenv import load_dotenv
 from flasgger import Swagger
 from routes.tasks import tasks_bp
+from models import db
+
+
+load_dotenv()
 
 
 def create_app(test_config=None):
     app = Flask(__name__)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tasks.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "DATABASE_URL",
+        "sqlite:///tasks.db"
+    )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     if test_config is not None:
@@ -19,7 +28,7 @@ def create_app(test_config=None):
         db.create_all()
 
     app.register_blueprint(tasks_bp)
-    
+
     swagger = Swagger(app)
 
     return app
@@ -28,5 +37,5 @@ def create_app(test_config=None):
 app = create_app()
 
 
-if __name__ == "__main__": # pragma: no cover
-    app.run(debug=True) # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
+    app.run(debug=True)  # pragma: no cover

@@ -1,12 +1,13 @@
-__pycache__/
-*.py[cod]
-
-instance/
-
-.venv/
-venv/
-env/
-
 .env
+__pycache__/
+*.pyc
+instance/
+.pytest_cache/
+.coverage
+htmlcov/
 
+.vscode/
+.idea/
+
+postman/
 .postman/
