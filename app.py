@@ -1,11 +1,10 @@
 import os
-
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 from flasgger import Swagger
 from routes.tasks import tasks_bp
 from models import db
-
+from flask_migrate import Migrate
 
 load_dotenv()
 
@@ -23,10 +22,9 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     db.init_app(app)
-
-    with app.app_context():
-        db.create_all()
-
+    
+    migrate = Migrate(app, db)
+ks
     app.register_blueprint(tasks_bp)
     
     @app.errorhandler(404)
