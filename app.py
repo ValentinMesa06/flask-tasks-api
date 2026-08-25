@@ -24,7 +24,7 @@ def create_app(test_config=None):
     db.init_app(app)
     
     migrate = Migrate(app, db)
-ks
+    
     app.register_blueprint(tasks_bp)
     
     @app.errorhandler(404)
