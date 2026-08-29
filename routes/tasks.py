@@ -1,11 +1,18 @@
 from flask import Blueprint, jsonify, request
 from models import db, Task
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 tasks_bp = Blueprint("tasks", __name__)
 
-# Ruta para obtener todas las tareas
-# GET /tasks obtiene todas las tareas de la base de datos y las devuelve en formato JSON.
+
+# ============================================================
+# GET /tasks
+# Obtener todas las tareas del usuario autenticado
+# ============================================================
+
 @tasks_bp.get("/tasks")
+@jwt_required()
 def get_tasks():
     """
     Obtener todas las tareas
@@ -14,146 +21,98 @@ def get_tasks():
       - Tasks
     responses:
       200:
-        description: Lista de todas las tareas
-        schema:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                example: 1
-              title:
-                type: string
-                example: "Aprender Flask"
-              completed:
-                type: boolean
-                example: false
+        description: Lista de tareas del usuario autenticado
     """
-    
-    tasks_from_db = Task.query.all()
 
-    return jsonify([task.to_dict() for task in tasks_from_db])
+    user_id = int(get_jwt_identity())
+
+    tasks_from_db = Task.query.filter_by(
+        user_id=user_id
+    ).all()
+
+    return jsonify([
+        task.to_dict()
+        for task in tasks_from_db
+    ])
 
 
-# GET /tasks/<int:task_id> obtiene una tarea específica por su ID
+# ============================================================
+# GET /tasks/<task_id>
+# Obtener una tarea específica
+# ============================================================
+
 @tasks_bp.get("/tasks/<int:task_id>")
+@jwt_required()
 def get_task(task_id):
     """
     Obtener una tarea por ID
     ---
     tags:
       - Tasks
-    parameters:
-      - name: task_id
-        in: path
-        type: integer
-        required: true
-        description: ID de la tarea
-        example: 1
     responses:
       200:
         description: Tarea encontrada
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
-              example: 1
-            title:
-              type: string
-              example: "Aprender Flask"
-            completed:
-              type: boolean
-              example: false
       404:
         description: Tarea no encontrada
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: "Tarea no encontrada"
     """
-    
-    task = db.session.get(Task, task_id)
+
+    user_id = int(get_jwt_identity())
+
+    task = Task.query.filter_by(
+        id=task_id,
+        user_id=user_id
+    ).first()
 
     if task is None:
-        return jsonify({"error": "Tarea no encontrada"}), 404
+        return jsonify({
+            "error": "Tarea no encontrada"
+        }), 404
 
     return jsonify(task.to_dict())
 
 
-# POST /tasks crea una nueva tarea en la base de datos
+# ============================================================
+# POST /tasks
+# Crear una nueva tarea
+# ============================================================
+
 @tasks_bp.post("/tasks")
+@jwt_required()
 def create_task():
     """
     Crear una nueva tarea
     ---
     tags:
       - Tasks
-    consumes:
-      - application/json
-    produces:
-      - application/json
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          required:
-            - title
-          properties:
-            title:
-              type: string
-              example: "Aprender Flask"
-            completed:
-              type: boolean
-              example: false
-    responses:
-      201:
-        description: Tarea creada correctamente
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
-              example: 1
-            title:
-              type: string
-              example: "Aprender Flask"
-            completed:
-              type: boolean
-              example: false
-      400:
-        description: Datos inválidos
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: "El campo 'title' es obligatorio"
     """
-    
+
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
-        return jsonify({"error": "El cuerpo debe ser un objeto JSON"}), 400
+        return jsonify({
+            "error": "El cuerpo debe ser un objeto JSON"
+        }), 400
 
     title = data.get("title")
 
     if not isinstance(title, str) or not title.strip():
-        return jsonify({"error": "El campo 'title' es obligatorio"}), 400
+        return jsonify({
+            "error": "El campo 'title' es obligatorio"
+        }), 400
 
     completed = data.get("completed", False)
 
     if not isinstance(completed, bool):
-        return jsonify({"error": "'completed' debe ser un booleano"}), 400
+        return jsonify({
+            "error": "'completed' debe ser un booleano"
+        }), 400
+
+    user_id = int(get_jwt_identity())
 
     task = Task(
         title=title.strip(),
-        completed=completed
+        completed=completed,
+        user_id=user_id
     )
 
     db.session.add(task)
@@ -162,89 +121,58 @@ def create_task():
     return jsonify(task.to_dict()), 201
 
 
-# PATCH /tasks/<int:task_id> actualiza una tarea existente
+# ============================================================
+# PATCH /tasks/<task_id>
+# Actualizar una tarea
+# ============================================================
+
 @tasks_bp.patch("/tasks/<int:task_id>")
+@jwt_required()
 def update_task(task_id):
     """
     Actualizar una tarea
     ---
     tags:
       - Tasks
-    consumes:
-      - application/json
-    produces:
-      - application/json
-    parameters:
-      - name: task_id
-        in: path
-        type: integer
-        required: true
-        description: ID de la tarea
-        example: 1
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            title:
-              type: string
-              example: "Aprender Flask y SQLAlchemy"
-            completed:
-              type: boolean
-              example: true
-    responses:
-      200:
-        description: Tarea actualizada correctamente
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
-              example: 1
-            title:
-              type: string
-              example: "Aprender Flask y SQLAlchemy"
-            completed:
-              type: boolean
-              example: true
-      400:
-        description: Datos inválidos
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: "'title' debe ser un texto no vacío"
-      404:
-        description: Tarea no encontrada
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: "Tarea no encontrada"
     """
-    
-    task = db.session.get(Task, task_id)
+
+    user_id = int(get_jwt_identity())
+
+    task = Task.query.filter_by(
+        id=task_id,
+        user_id=user_id
+    ).first()
 
     if task is None:
-        return jsonify({"error": "Tarea no encontrada"}), 404
+        return jsonify({
+            "error": "Tarea no encontrada"
+        }), 404
 
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
-        return jsonify({"error": "El cuerpo debe ser un objeto JSON"}), 400
+        return jsonify({
+            "error": "El cuerpo debe ser un objeto JSON"
+        }), 400
 
     if "title" in data:
-        if not isinstance(data["title"], str) or not data["title"].strip():
-            return jsonify({"error": "'title' debe ser un texto no vacío"}), 400
+
+        if (
+            not isinstance(data["title"], str)
+            or not data["title"].strip()
+        ):
+            return jsonify({
+                "error": "'title' debe ser un texto no vacío"
+            }), 400
 
         task.title = data["title"].strip()
 
     if "completed" in data:
+
         if not isinstance(data["completed"], bool):
-            return jsonify({"error": "'completed' debe ser un booleano"}), 400
+            return jsonify({
+                "error": "'completed' debe ser un booleano"
+            }), 400
 
         task.completed = data["completed"]
 
@@ -253,41 +181,32 @@ def update_task(task_id):
     return jsonify(task.to_dict())
 
 
-# DELETE /tasks/<int:task_id> elimina una tarea existente
+# ============================================================
+# DELETE /tasks/<task_id>
+# Eliminar una tarea
+# ============================================================
+
 @tasks_bp.delete("/tasks/<int:task_id>")
-@tasks_bp.delete("/tasks/<int:task_id>")
+@jwt_required()
 def delete_task(task_id):
     """
     Eliminar una tarea
     ---
     tags:
       - Tasks
-    produces:
-      - application/json
-    parameters:
-      - name: task_id
-        in: path
-        type: integer
-        required: true
-        description: ID de la tarea que se desea eliminar
-        example: 1
-    responses:
-      204:
-        description: Tarea eliminada correctamente
-      404:
-        description: Tarea no encontrada
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: "Tarea no encontrada"
     """
-    
-    task = db.session.get(Task, task_id)
+
+    user_id = int(get_jwt_identity())
+
+    task = Task.query.filter_by(
+        id=task_id,
+        user_id=user_id
+    ).first()
 
     if task is None:
-        return jsonify({"error": "Tarea no encontrada"}), 404
+        return jsonify({
+            "error": "Tarea no encontrada"
+        }), 404
 
     db.session.delete(task)
     db.session.commit()

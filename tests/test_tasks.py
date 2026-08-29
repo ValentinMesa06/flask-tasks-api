@@ -1,7 +1,13 @@
+# ============================================================
 # Casos de prueba para la obtención de tareas
-def test_get_tasks(client):
+# ============================================================
 
-    response = client.get("/tasks")
+def test_get_tasks(client, auth_headers):
+
+    response = client.get(
+        "/tasks",
+        headers=auth_headers
+    )
 
     assert response.status_code == 200
 
@@ -10,9 +16,12 @@ def test_get_tasks(client):
     assert isinstance(data, list)
 
 
-def test_get_task(client):
+def test_get_task(client, auth_headers):
 
-    response = client.get("/tasks/1")
+    response = client.get(
+        "/tasks/1",
+        headers=auth_headers
+    )
 
     assert response.status_code == 200
 
@@ -21,9 +30,12 @@ def test_get_task(client):
     assert data["id"] == 1
 
 
-def test_get_task_not_found(client):
+def test_get_task_not_found(client, auth_headers):
 
-    response = client.get("/tasks/999999")
+    response = client.get(
+        "/tasks/999999",
+        headers=auth_headers
+    )
 
     assert response.status_code == 404
 
@@ -31,15 +43,20 @@ def test_get_task_not_found(client):
 
     assert data["error"] == "Tarea no encontrada"
 
+
+# ============================================================
 # Casos de prueba para la creación de tareas
-def test_create_task(client):
+# ============================================================
+
+def test_create_task(client, auth_headers):
 
     response = client.post(
-        "/tasks", 
+        "/tasks",
         json={
             "title": "Tarea creada desde Pytest",
             "completed": False
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 201
@@ -47,17 +64,18 @@ def test_create_task(client):
     data = response.get_json()
 
     assert data["title"] == "Tarea creada desde Pytest"
-    assert data["completed"] == False
+    assert data["completed"] is False
     assert "id" in data
-    
-    
-def test_create_task_without_title(client):
+
+
+def test_create_task_without_title(client, auth_headers):
 
     response = client.post(
-        "/tasks", 
+        "/tasks",
         json={
             "completed": False
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 400
@@ -67,14 +85,15 @@ def test_create_task_without_title(client):
     assert data["error"] == "El campo 'title' es obligatorio"
 
 
-def test_create_task_with_empty_title(client):
+def test_create_task_with_empty_title(client, auth_headers):
 
     response = client.post(
-        "/tasks", 
+        "/tasks",
         json={
             "title": "",
             "completed": False
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 400
@@ -84,14 +103,15 @@ def test_create_task_with_empty_title(client):
     assert data["error"] == "El campo 'title' es obligatorio"
 
 
-def test_create_task_with_invalid_completed(client):
+def test_create_task_with_invalid_completed(client, auth_headers):
 
     response = client.post(
-        "/tasks", 
+        "/tasks",
         json={
             "title": "Tarea invalida",
             "completed": "false"
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 400
@@ -101,14 +121,18 @@ def test_create_task_with_invalid_completed(client):
     assert data["error"] == "'completed' debe ser un booleano"
 
 
+# ============================================================
 # Casos de prueba para la actualización de tareas
-def test_update_task_title(client):
+# ============================================================
+
+def test_update_task_title(client, auth_headers):
 
     response = client.patch(
         "/tasks/1",
         json={
             "title": "Título actualizado"
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 200
@@ -119,13 +143,14 @@ def test_update_task_title(client):
     assert data["title"] == "Título actualizado"
 
 
-def test_update_task_completed(client):
+def test_update_task_completed(client, auth_headers):
 
     response = client.patch(
         "/tasks/1",
         json={
             "completed": True
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 200
@@ -135,13 +160,14 @@ def test_update_task_completed(client):
     assert data["completed"] is True
 
 
-def test_update_task_with_empty_title(client):
+def test_update_task_with_empty_title(client, auth_headers):
 
     response = client.patch(
         "/tasks/1",
         json={
             "title": ""
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 400
@@ -151,13 +177,14 @@ def test_update_task_with_empty_title(client):
     assert data["error"] == "'title' debe ser un texto no vacío"
 
 
-def test_update_task_with_invalid_completed(client):
+def test_update_task_with_invalid_completed(client, auth_headers):
 
     response = client.patch(
         "/tasks/1",
         json={
             "completed": "true"
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 400
@@ -165,15 +192,16 @@ def test_update_task_with_invalid_completed(client):
     data = response.get_json()
 
     assert data["error"] == "'completed' debe ser un booleano"
-    
 
-def test_update_task_not_found(client):
+
+def test_update_task_not_found(client, auth_headers):
 
     response = client.patch(
         "/tasks/999999",
         json={
             "title": "Tarea inexistente"
-        }
+        },
+        headers=auth_headers
     )
 
     assert response.status_code == 404
@@ -183,17 +211,26 @@ def test_update_task_not_found(client):
     assert data["error"] == "Tarea no encontrada"
 
 
+# ============================================================
 # Casos de prueba para la eliminación de tareas
-def test_delete_task(client):
+# ============================================================
 
-    response = client.delete("/tasks/1")
+def test_delete_task(client, auth_headers):
+
+    response = client.delete(
+        "/tasks/1",
+        headers=auth_headers
+    )
 
     assert response.status_code == 204
 
 
-def test_delete_task_not_found(client):
+def test_delete_task_not_found(client, auth_headers):
 
-    response = client.delete("/tasks/999999")
+    response = client.delete(
+        "/tasks/999999",
+        headers=auth_headers
+    )
 
     assert response.status_code == 404
 
@@ -202,11 +239,16 @@ def test_delete_task_not_found(client):
     assert data["error"] == "Tarea no encontrada"
 
 
-# Casos de prueba para la creación de tareas con cuerpo inválido
-def test_create_task_with_invalid_body(client):
+# ============================================================
+# Casos de prueba para cuerpo inválido
+# ============================================================
+
+def test_create_task_with_invalid_body(client, auth_headers):
+
     response = client.post(
         "/tasks",
-        json=[]
+        json=[],
+        headers=auth_headers
     )
 
     assert response.status_code == 400
@@ -214,12 +256,14 @@ def test_create_task_with_invalid_body(client):
     data = response.get_json()
 
     assert data["error"] == "El cuerpo debe ser un objeto JSON"
-    
 
-def test_update_task_with_invalid_body(client):
+
+def test_update_task_with_invalid_body(client, auth_headers):
+
     response = client.patch(
         "/tasks/1",
-        json=[]
+        json=[],
+        headers=auth_headers
     )
 
     assert response.status_code == 400
@@ -227,11 +271,17 @@ def test_update_task_with_invalid_body(client):
     data = response.get_json()
 
     assert data["error"] == "El cuerpo debe ser un objeto JSON"
-    
 
+
+# ============================================================
 # Casos de prueba para rutas no encontradas
+# ============================================================
+
 def test_route_not_found(client):
-    response = client.get("/ruta-que-no-existe")
+
+    response = client.get(
+        "/ruta-que-no-existe"
+    )
 
     assert response.status_code == 404
 
@@ -239,8 +289,13 @@ def test_route_not_found(client):
 
     assert data["error"] == "Recurso no encontrado"
 
-def test_method_not_allowed(client):
-    response = client.post("/tasks/1")
+
+def test_method_not_allowed(client, auth_headers):
+
+    response = client.post(
+        "/tasks/1",
+        headers=auth_headers
+    )
 
     assert response.status_code == 405
 
@@ -248,7 +303,9 @@ def test_method_not_allowed(client):
 
     assert data["error"] == "Método no permitido"
 
+
 def test_internal_server_error(client):
+
     app = client.application
 
     app.config["PROPAGATE_EXCEPTIONS"] = False
@@ -257,7 +314,9 @@ def test_internal_server_error(client):
     def trigger_500_test():
         raise Exception("Error de prueba")
 
-    response = client.get("/trigger-500-test")
+    response = client.get(
+        "/trigger-500-test"
+    )
 
     assert response.status_code == 500
 

@@ -1,10 +1,15 @@
 import os
+
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 from flasgger import Swagger
-from routes.tasks import tasks_bp
-from models import db
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
+
+from models import db
+from routes.tasks import tasks_bp
+from routes.auth import auth_bp
+
 
 load_dotenv()
 
@@ -23,9 +28,13 @@ def create_app(test_config=None):
 
     db.init_app(app)
     
+    jwt = JWTManager(app)
+    
+    
     migrate = Migrate(app, db)
     
     app.register_blueprint(tasks_bp)
+    app.register_blueprint(auth_bp)
     
     @app.errorhandler(404)
     def not_found(error):
@@ -45,6 +54,11 @@ def create_app(test_config=None):
 
 
 app = create_app()
+
+app.config["JWT_SECRET_KEY"] = os.getenv(
+    "JWT_SECRET_KEY", 
+    "clave-secreta-solo-para-desarrollo"
+)
 
 
 if __name__ == "__main__":  # pragma: no cover
