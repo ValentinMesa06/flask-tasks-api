@@ -1,386 +1,428 @@
 ﻿# Flask Tasks API
 
-API REST para gestionar tareas desarrollada con **Python, Flask y Flask-SQLAlchemy**.
+API REST para gestionar tareas, desarrollada con **Python y Flask**. El proyecto implementa autenticación de usuarios mediante **JWT**, persistencia de datos con **SQLite y SQLAlchemy**, validación de solicitudes y tests automatizados con **pytest**.
 
-El proyecto implementa un CRUD completo de tareas, persistencia de datos mediante SQLite, validaciones de entrada, arquitectura organizada mediante Blueprints, tests automatizados con Pytest y un workflow de integración continua mediante GitHub Actions.
+## 🚀 Características
 
----
+* Registro de usuarios.
+* Inicio de sesión mediante JWT.
+* Contraseñas almacenadas de forma segura mediante hashing.
+* Creación de tareas.
+* Consulta de tareas.
+* Consulta de una tarea por ID.
+* Actualización parcial de tareas.
+* Eliminación de tareas.
+* Cada usuario puede acceder únicamente a sus propias tareas.
+* Validación de datos recibidos.
+* Manejo de errores HTTP.
+* Tests automatizados con pytest.
+* 100% de cobertura de código en los tests actuales.
 
-## 📌 Características
+## 🛠️ Tecnologías utilizadas
 
-- API REST desarrollada con Flask.
-- CRUD completo de tareas.
-- Persistencia de datos utilizando SQLite.
-- ORM mediante Flask-SQLAlchemy.
-- Organización de rutas utilizando Flask Blueprints.
-- Validación de datos recibidos en las peticiones.
-- Manejo de errores HTTP.
-- Respuestas en formato JSON.
-- Tests automatizados utilizando Pytest.
-- 16 tests automatizados.
-- 100% de cobertura de código.
-- Base de datos independiente para los tests.
-- Integración continua mediante GitHub Actions.
-- Verificación automática de los tests en cada `push` a `main`.
+* **Python 3**
+* **Flask**
+* **Flask-SQLAlchemy**
+* **SQLAlchemy**
+* **Flask-JWT-Extended**
+* **SQLite**
+* **Pytest**
+* **Pytest-Cov**
+* **Postman**
 
----
-
-## ⚙️ Tecnologías utilizadas
-
-| Tecnología | Uso |
-|---|---|
-| Python | Lenguaje principal |
-| Flask | Framework web |
-| Flask-SQLAlchemy | ORM y conexión con SQLite |
-| SQLAlchemy | Gestión de la base de datos |
-| SQLite | Base de datos |
-| Pytest | Tests automatizados |
-| pytest-cov | Medición de cobertura |
-| Git | Control de versiones |
-| GitHub | Repositorio remoto |
-| GitHub Actions | Integración continua |
-
----
-
-## 📂 Estructura del proyecto
+## 📁 Estructura del proyecto
 
 ```text
 flask-tasks-api/
 │
-├── .github/
-│   └── workflows/
-│       └── tests.yml
-│
-├── instance/
-│   └── tasks.db
-│
 ├── routes/
 │   ├── __init__.py
+│   ├── auth.py
 │   └── tasks.py
 │
 ├── tests/
-│   ├── __init__.py
 │   ├── conftest.py
+│   ├── test_auth.py
+│   ├── test_config.py
+│   ├── test_models.py
 │   └── test_tasks.py
 │
-├── .gitignore
 ├── app.py
+├── config.py
 ├── models.py
 ├── requirements.txt
-└── README.md
+├── README.md
+└── .gitignore
 ```
 
-### Descripción de los principales archivos
+## ⚙️ Instalación
 
-**`app.py`**: archivo principal de la aplicación. Crea la aplicación Flask, configura SQLAlchemy, inicializa la base de datos y registra los Blueprints.
-
-**`models.py`**: contiene los modelos de SQLAlchemy. Actualmente se encuentra definido el modelo `Task`.
-
-**`routes/tasks.py`**: contiene los endpoints relacionados con las tareas.
-
-**`tests/`**: contiene los tests automatizados de la API y las fixtures utilizadas para crear un entorno de pruebas aislado.
-
-**`.github/workflows/tests.yml`**: define el workflow de GitHub Actions encargado de ejecutar automáticamente los tests.
-
-**`requirements.txt`**: contiene las dependencias necesarias para ejecutar el proyecto.
-
----
-
-# 🚀 Instalación y ejecución del proyecto
-
-## 1. Clonar el repositorio
+### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/ValentinMesa06/flask-tasks-api.git
+```
+
+### 2. Entrar en el proyecto
+
+```bash
 cd flask-tasks-api
 ```
 
-## 2. Crear un entorno virtual
+### 3. Crear un entorno virtual
 
 Windows:
 
 ```bash
 python -m venv venv
+```
+
+### 4. Activar el entorno virtual
+
+Windows:
+
+```bash
 venv\Scripts\activate
 ```
 
-Linux / macOS:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-## 3. Instalar las dependencias
+### 5. Instalar las dependencias
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 4. Ejecutar la aplicación
+## ▶️ Ejecutar la aplicación
+
+Ejecutar:
 
 ```bash
 python app.py
 ```
 
-La API estará disponible normalmente en `http://127.0.0.1:5000` o `http://localhost:5000`.
-La base de datos SQLite se crea en `instance/tasks.db` cuando la aplicación la necesita.
+La API estará disponible en:
 
-Para detener el servidor, utiliza `Ctrl+C`.
+```text
+http://127.0.0.1:5000
+```
 
 ---
 
-# 📋 Modelo `Task`
+# 🔐 Autenticación
+
+La API utiliza **JSON Web Tokens (JWT)** para proteger los endpoints relacionados con las tareas.
+
+## Registrar un usuario
+
+**POST**
+
+```text
+/auth/register
+```
+
+Body:
 
 ```json
 {
-	"id": 1,
-	"title": "Aprender Flask",
-	"completed": false
+    "username": "usuario1",
+    "password": "password123"
 }
 ```
 
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `id` | Integer | Identificador único de la tarea |
-| `title` | String | Título de la tarea |
-| `completed` | Boolean | Indica si la tarea está completada |
+Respuesta:
 
-El campo `id` es generado automáticamente por la base de datos. `completed` tiene `false` como valor predeterminado.
+```json
+{
+    "id": 1,
+    "username": "usuario1"
+}
+```
+
+## Iniciar sesión
+
+**POST**
+
+```text
+/auth/login
+```
+
+Body:
+
+```json
+{
+    "username": "usuario1",
+    "password": "password123"
+}
+```
+
+Respuesta:
+
+```json
+{
+    "access_token": "JWT_TOKEN"
+}
+```
+
+El token obtenido debe enviarse en las solicitudes protegidas utilizando:
+
+```text
+Authorization: Bearer JWT_TOKEN
+```
 
 ---
 
-# 🔗 Endpoints completos
+# 📋 Endpoints
 
-URL base: `http://127.0.0.1:5000`
+## 🔑 Autenticación
 
-| Método | Ruta | Descripción | Respuesta exitosa |
-|---|---|---|---|
-| `GET` | `/tasks` | Lista todas las tareas | `200 OK` |
-| `GET` | `/tasks/<id>` | Obtiene una tarea por su ID | `200 OK` |
-| `POST` | `/tasks` | Crea una tarea | `201 Created` |
-| `PATCH` | `/tasks/<id>` | Actualiza uno o más campos | `200 OK` |
-| `DELETE` | `/tasks/<id>` | Elimina una tarea | `204 No Content` |
+| Método | Endpoint         | Descripción                  | Autenticación |
+| ------ | ---------------- | ---------------------------- | ------------- |
+| POST   | `/auth/register` | Registrar un usuario         | No            |
+| POST   | `/auth/login`    | Iniciar sesión y obtener JWT | No            |
 
-Los identificadores (`<id>`) deben ser enteros. Cuando una tarea no existe, la API devuelve `404 Not Found`.
+## 📝 Tareas
 
-## 📚 Documentación Swagger / OpenAPI
-
-La documentación Swagger / OpenAPI está contemplada como una mejora futura del proyecto. Actualmente, los endpoints, parámetros, cuerpos JSON y respuestas están documentados en este README. Para añadir una interfaz interactiva, se puede integrar una herramienta compatible con Flask, como `flasgger` o `flask-smorest`.
+| Método | Endpoint      | Descripción                    | Autenticación |
+| ------ | ------------- | ------------------------------ | ------------- |
+| GET    | `/tasks`      | Obtener las tareas del usuario | Sí            |
+| GET    | `/tasks/<id>` | Obtener una tarea específica   | Sí            |
+| POST   | `/tasks`      | Crear una nueva tarea          | Sí            |
+| PATCH  | `/tasks/<id>` | Actualizar una tarea           | Sí            |
+| DELETE | `/tasks/<id>` | Eliminar una tarea             | Sí            |
 
 ---
 
-## Ejemplos de requests y responses
+# 📝 Ejemplos de uso
 
-## Obtener todas las tareas
+## Obtener tareas
 
-```http
-GET /tasks
+**GET**
+
+```text
+/tasks
 ```
 
-```bash
-curl http://127.0.0.1:5000/tasks
+Header:
+
+```text
+Authorization: Bearer JWT_TOKEN
 ```
 
-Respuesta (`200 OK`):
+Respuesta:
 
 ```json
 [
-	{"id": 1, "title": "Aprender Flask", "completed": false}
+    {
+        "id": 1,
+        "title": "Aprender Flask",
+        "completed": false
+    }
 ]
 ```
 
-## Obtener una tarea
-
-```http
-GET /tasks/<id>
-```
-
-```bash
-curl http://127.0.0.1:5000/tasks/1
-```
-
-Respuesta (`200 OK`):
-
-```json
-{"id": 1, "title": "Aprender Flask", "completed": false}
-```
-
-Si no existe (`404 Not Found`):
-
-```json
-{"error": "Tarea no encontrada"}
-```
-
-Código `404 Not Found`.
-
 ## Crear una tarea
 
-```http
-POST /tasks
-Content-Type: application/json
+**POST**
+
+```text
+/tasks
 ```
+
+Body:
 
 ```json
 {
-	"title": "Aprender Flask",
-	"completed": false
+    "title": "Aprender Flask y JWT",
+    "completed": false
 }
 ```
 
-```bash
-curl -X POST http://127.0.0.1:5000/tasks \
-	-H "Content-Type: application/json" \
-	-d '{"title":"Aprender Flask","completed":false}'
-```
-
-Respuesta (`201 Created`):
+Respuesta:
 
 ```json
-{"id": 1, "title": "Aprender Flask", "completed": false}
+{
+    "id": 2,
+    "title": "Aprender Flask y JWT",
+    "completed": false
+}
 ```
-
-El campo `completed` es opcional y utiliza `false` por defecto.
 
 ## Actualizar una tarea
 
-```http
-PATCH /tasks/<id>
+**PATCH**
+
+```text
+/tasks/1
 ```
 
-Permite modificar uno o varios campos (`title` y `completed`) de una tarea existente. Devuelve la tarea actualizada con código `200 OK`.
-
-```bash
-curl -X PATCH http://127.0.0.1:5000/tasks/1 \
-	-H "Content-Type: application/json" \
-	-d '{"completed":true}'
-```
-
-Respuesta (`200 OK`):
+Body:
 
 ```json
-{"id": 1, "title": "Aprender Flask", "completed": true}
+{
+    "completed": true
+}
+```
+
+Respuesta:
+
+```json
+{
+    "id": 1,
+    "title": "Aprender Flask",
+    "completed": true
+}
 ```
 
 ## Eliminar una tarea
 
-```http
-DELETE /tasks/<id>
+**DELETE**
+
+```text
+/tasks/1
 ```
 
-```bash
-curl -X DELETE http://127.0.0.1:5000/tasks/1
-```
+Respuesta:
 
-Si la tarea existe, se elimina de la base de datos y devuelve `204 No Content`.
+```text
+204 No Content
+```
 
 ---
 
-# ⚠️ Validaciones
+# ❌ Manejo de errores
 
-- `title` es obligatorio y debe ser un texto no vacío.
-- `completed` debe ser un booleano.
-- Las peticiones que crean o modifican tareas deben recibir un objeto JSON.
+La API devuelve respuestas JSON para diferentes errores HTTP.
 
-Ejemplos de errores:
+### 400 — Solicitud inválida
 
-```json
-{"error": "El campo 'title' es obligatorio"}
-```
+Ejemplo:
 
 ```json
-{"error": "'completed' debe ser un booleano"}
+{
+    "error": "El campo 'title' es obligatorio"
+}
 ```
+
+### 401 — No autorizado
+
+Ejemplo:
 
 ```json
-{"error": "El cuerpo debe ser un objeto JSON"}
+{
+    "error": "Usuario o contraseña incorrectos"
+}
 ```
 
-Todos corresponden a `400 Bad Request`.
+### 404 — Recurso no encontrado
+
+Ejemplo:
+
+```json
+{
+    "error": "Tarea no encontrada"
+}
+```
+
+### 405 — Método no permitido
+
+Ejemplo:
+
+```json
+{
+    "error": "Método no permitido"
+}
+```
+
+### 500 — Error interno
+
+Ejemplo:
+
+```json
+{
+    "error": "Error interno del servidor"
+}
+```
 
 ---
 
-# 🧪 Cómo ejecutar los tests
+# 🧪 Tests
 
-El proyecto utiliza **Pytest** y cuenta actualmente con 16 tests, 100% de cobertura y 0 warnings.
+El proyecto utiliza **pytest** para realizar pruebas automatizadas.
+
+Para ejecutar todos los tests:
 
 ```bash
 pytest
 ```
 
-Los tests utilizan una base de datos independiente para evitar modificar los datos reales.
-
-## 📊 Coverage
-
-Para ejecutar los tests y generar el informe de cobertura:
+Para ejecutar los tests mostrando cobertura:
 
 ```bash
-pytest --cov=. --cov-report=term-missing
+pytest --cov=.
 ```
 
-El proyecto cuenta actualmente con 16 tests y una cobertura del 100%. El informe muestra las líneas no cubiertas directamente en la terminal.
-
----
-
-# ✅ GitHub Actions e integración continua
-
-El workflow `.github/workflows/tests.yml` ejecuta automáticamente los tests en cada `push` a `main` y en Pull Requests hacia `main`. Así se comprueba que los cambios mantienen el funcionamiento esperado antes de integrarse.
-
-Proceso: configurar Python → instalar dependencias → ejecutar Pytest → verificar los 16 tests y el 100% de cobertura.
-
----
-
-# 🗄️ Base de datos
-
-La aplicación utiliza SQLite mediante Flask-SQLAlchemy. La base de datos de desarrollo se encuentra en `instance/tasks.db` y contiene la tabla `Task` con los campos `id`, `title` y `completed`.
-
----
-
-# 📮 Probar la API con Postman
-
-La API puede probarse utilizando [Postman](https://www.postman.com/).
-
-URL base: `http://127.0.0.1:5000`
+Estado actual:
 
 ```text
-GET     /tasks
-GET     /tasks/1
-POST    /tasks
-PATCH   /tasks/1
-DELETE  /tasks/1
+40 passed
+100% coverage
 ```
 
-Para `POST` y `PATCH`, seleccionar **Body → raw → JSON**.
+Los tests cubren:
+
+* Registro de usuarios.
+* Login.
+* Validaciones de autenticación.
+* Modelo de usuarios.
+* Modelo de tareas.
+* Obtención de tareas.
+* Creación de tareas.
+* Actualización de tareas.
+* Eliminación de tareas.
+* Validación de datos.
+* Rutas inexistentes.
+* Métodos HTTP no permitidos.
+* Errores internos.
+* Autorización mediante JWT.
+* Aislamiento de tareas entre usuarios.
 
 ---
 
-# 📈 Estado del proyecto
+# 🔒 Seguridad
 
-El proyecto cuenta con configuración inicial de Flask, API REST, CRUD de tareas, SQLite, Flask-SQLAlchemy, modelo `Task`, Blueprints, validaciones, manejo de errores, tests con Pytest, fixtures, base de datos aislada, 16 tests automatizados, 100% de cobertura, GitHub Actions e integración continua.
+El proyecto implementa varias medidas básicas de seguridad:
+
+* Las contraseñas no se almacenan en texto plano.
+* Se utiliza hashing mediante Werkzeug.
+* Los endpoints de tareas requieren autenticación JWT.
+* Cada tarea está asociada a un usuario.
+* Los usuarios solamente pueden acceder a sus propias tareas.
+* El `user_id` no es enviado por el cliente al crear una tarea; se obtiene a partir del usuario autenticado.
 
 ---
 
-# 🚧 Próximas mejoras
+# 📌 Estado del proyecto
 
-- Documentación Swagger / OpenAPI
-- Variables de entorno para la configuración
-- Manejo global de errores
-- Paginación, filtros y ordenamiento de tareas
-- Autenticación de usuarios
-- Tests de integración adicionales
-- Dockerización y deploy de la API
-- Base de datos PostgreSQL para producción
+Proyecto funcional y en desarrollo.
+
+Actualmente cuenta con:
+
+* ✅ API REST funcional.
+* ✅ CRUD de tareas.
+* ✅ Autenticación JWT.
+* ✅ Autorización por usuario.
+* ✅ SQLite + SQLAlchemy.
+* ✅ Validaciones.
+* ✅ Manejo de errores.
+* ✅ Tests automatizados.
+* ✅ 100% de cobertura en los tests actuales.
+* ✅ Pruebas manuales realizadas con Postman.
 
 ---
 
 # 👨‍💻 Autor
 
-**Valentín Mesa**
+**Valentín Santiago Mesa**
 
-Proyecto desarrollado como práctica para aprender y aplicar conceptos de desarrollo de APIs REST utilizando Python y Flask.
+GitHub:
+https://github.com/ValentinMesa06
 
----
-
-# 📄 Licencia
-
-Este proyecto se encuentra disponible para fines educativos y de aprendizaje.
