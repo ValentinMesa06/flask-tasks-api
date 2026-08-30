@@ -364,7 +364,7 @@ Estado actual:
 
 ```text
 40 passed
-100% coverage
+99% coverage
 ```
 
 Los tests cubren:
