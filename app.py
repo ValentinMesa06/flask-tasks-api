@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 
@@ -12,7 +14,7 @@ def create_app(test_config=None):
     # Configuración de la aplicación
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tasks.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["JWT_SECRET_KEY"] = "clave-secreta-para-desarrollo"
+    app.config["JWT_SECRET_KEY"] = os.environ.get( "JWT_SECRET_KEY", "clave-secreta-para-desarrollo" )
 
     # Si estamos ejecutando tests, usamos la configuración de los tests
     if test_config:
